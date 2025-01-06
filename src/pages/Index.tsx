@@ -13,21 +13,37 @@ const Index = () => {
   const analyzeImage = async (file: File) => {
     setIsAnalyzing(true);
     try {
-      // TODO: Implement OpenAI API integration
-      // For now, we'll simulate a response
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setRecommendations(
-        "Based on the image analysis, here are the recommended wound care steps:\n\n" +
-        "1. Clean the wound area with sterile saline solution\n" +
-        "2. Apply appropriate dressing based on wound characteristics\n" +
-        "3. Monitor for signs of infection\n" +
-        "4. Change dressing as recommended\n\n" +
-        "Please consult a healthcare professional for personalized medical advice."
-      );
+      // Convert the image to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve) => {
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+      
+      const base64 = await base64Promise;
+      console.log("Image converted to base64, calling Edge Function...");
+
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('analyze-wound', {
+        body: { image_base64: base64 },
+      });
+
+      console.log("Edge Function response:", data, error);
+
+      if (error) throw error;
+      if (!data?.analysis) throw new Error('No analysis received');
+
+      setRecommendations(data.analysis);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Wound analysis and recommendations are ready.",
+      });
     } catch (error) {
+      console.error("Analysis error:", error);
       toast({
         title: "Analysis Failed",
-        description: "There was an error analyzing the image. Please try again.",
+        description: error.message || "There was an error analyzing the image. Please try again.",
         variant: "destructive",
       });
     } finally {
