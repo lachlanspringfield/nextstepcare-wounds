@@ -41,8 +41,8 @@ const Index = () => {
             Wound Care Assistant
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload an image of a wound to receive evidence-based care recommendations.
-            Our AI-powered analysis helps guide proper wound care procedures.
+            Upload an image of a wound and receive evidence-based care recommendations. <br></br>
+            Our AI-powered analysis compares wounds against validated guidelines to help translate current evidence into practice.
           </p>
         </div>
 
@@ -56,8 +56,7 @@ const Index = () => {
 
         <footer className="mt-16 text-center text-sm text-muted-foreground">
           <p>
-            This tool is for educational purposes only. Always consult healthcare
-            professionals for medical advice.
+            This tool is for limited educational and experimental purposes only.
           </p>
         </footer>
       </div>
