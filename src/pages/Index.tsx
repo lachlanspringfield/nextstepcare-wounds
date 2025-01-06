@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ImageUpload } from "@/components/ImageUpload";
 import { Recommendations } from "@/components/Recommendations";
 import { useToast } from "@/hooks/use-toast";
+import { Header } from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -34,32 +36,35 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 animate-fade-in">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            Wound Care Assistant
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload an image of a wound and receive evidence-based care recommendations. <br></br>
-            Our AI-powered analysis compares wounds against validated guidelines to help translate current evidence into practice.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="py-12 px-4 animate-fade-in">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-primary mb-4">
+              Wound Analysis
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Upload an image of a wound and receive evidence-based care recommendations. <br />
+              Our AI-powered analysis compares wounds against validated guidelines to help translate current evidence into practice.
+            </p>
+          </div>
 
-        <div className="space-y-8">
-          <ImageUpload onImageSelect={analyzeImage} />
-          <Recommendations
-            recommendations={recommendations}
-            isLoading={isAnalyzing}
-          />
-        </div>
+          <div className="space-y-8">
+            <ImageUpload onImageSelect={analyzeImage} />
+            <Recommendations
+              recommendations={recommendations}
+              isLoading={isAnalyzing}
+            />
+          </div>
 
-        <footer className="mt-16 text-center text-sm text-muted-foreground">
-          <p>
-            This tool is for limited educational and experimental purposes only.
-          </p>
-        </footer>
-      </div>
+          <footer className="mt-16 text-center text-sm text-muted-foreground">
+            <p>
+              This tool is for limited educational and experimental purposes only.
+            </p>
+          </footer>
+        </div>
+      </main>
     </div>
   );
 };
