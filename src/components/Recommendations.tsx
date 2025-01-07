@@ -15,32 +15,35 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
   const { toast } = useToast();
 
   const handleDownload = async () => {
+    console.log("Starting PDF generation process...");
+    console.log("Recommendations content:", recommendations);
+    
     try {
-      console.log("Starting PDF generation process...");
-      
       if (!recommendations) {
+        console.error("No recommendations available");
         throw new Error("No recommendations available to generate PDF");
       }
 
-      // Create a temporary container with specific styling
+      // Create a temporary container
       const element = document.createElement('div');
+      element.style.padding = '20px';
+      element.style.background = '#ffffff';
       element.style.width = '210mm'; // A4 width
-      element.style.margin = '0';
-      element.style.padding = '20mm';
       
       // Convert current time to Sydney timezone
       const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
       const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
       
-      // Process content with proper styling
+      console.log("Processing content for PDF...");
+      
+      // Process content with explicit styling
       const processedContent = recommendations.split('\n').map(line => {
         if (line.startsWith('### ')) {
-          return `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; color: #000000; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h3>`;
+          return `<h3 style="color: #000000; font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h3>`;
         }
-        return `<p style="margin: 8px 0; color: #000000; font-family: Arial, sans-serif; line-height: 1.5;">${line}</p>`;
+        return `<p style="color: #000000; margin: 8px 0; font-family: Arial, sans-serif; line-height: 1.5;">${line}</p>`;
       }).join('');
 
-      // Set the HTML content with explicit styling
       element.innerHTML = `
         <div style="font-family: Arial, sans-serif; color: #000000;">
           <div style="text-align: center; margin-bottom: 20px;">
@@ -61,47 +64,52 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
         </div>
       `;
 
+      console.log("HTML content prepared:", element.innerHTML);
+
       // Configure PDF options
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: 10,
         filename: 'wound-care-recommendations.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
           useCORS: true,
           logging: true,
-          letterRendering: true,
-          windowWidth: 794, // A4 width in pixels at 96 DPI
+          backgroundColor: '#ffffff'
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait',
-          compress: true
+          orientation: 'portrait'
         }
       };
 
       console.log("PDF generation options:", opt);
 
-      // Generate PDF with proper error handling
-      const pdf = html2pdf().set(opt);
-      
       toast({
         title: "Generating PDF",
         description: "Please wait while we generate your PDF...",
       });
 
-      await pdf.from(element).save();
-      
-      console.log("PDF generation completed successfully");
-      
-      toast({
-        title: "Success",
-        description: "PDF has been generated and should start downloading.",
-      });
+      // Generate PDF with Promise chain for better error handling
+      await html2pdf()
+        .from(element)
+        .set(opt)
+        .save()
+        .then(() => {
+          console.log("PDF generation completed successfully");
+          toast({
+            title: "Success",
+            description: "PDF has been generated and should start downloading.",
+          });
+        })
+        .catch((error) => {
+          console.error("Error in PDF generation promise chain:", error);
+          throw error;
+        });
 
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error("Detailed error in PDF generation:", error);
       
       toast({
         title: "Error",
