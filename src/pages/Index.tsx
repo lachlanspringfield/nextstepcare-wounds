@@ -141,8 +141,7 @@ const Index = () => {
               Wound Analysis
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Upload an image of a wound and receive evidence-based care recommendations. <br />
-              Our AI-powered analysis compares wounds against validated guidelines to help translate current evidence into practice.
+              Receive evidence-based care recommendations from our AI-powered tool, comparing wounds against validated guidelines.
             </p>
           </div>
 

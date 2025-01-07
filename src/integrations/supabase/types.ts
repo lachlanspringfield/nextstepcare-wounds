@@ -121,7 +121,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_admin_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          session_id: string
+          started_at: string
+          ended_at: string
+          total_interactions: number
+          features_used: string
+          error_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -49,13 +49,11 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
     // Process markdown-style headings in recommendations
     const processedRecommendations = recommendations.replace(/###\s*(.*?)(\n|$)/g, '<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">$1</h3>');
     
-    // Temporarily add header and footer to the recommendations div
-    const content = document.getElementById('recommendations');
-    if (content) {
-      content.innerHTML = header.innerHTML + 
-        '<div style="margin: 20px 0;">' + processedRecommendations + '</div>' + 
-        footer.innerHTML;
-    }
+    // Create a temporary container for the PDF content
+    const pdfContent = document.createElement('div');
+    pdfContent.innerHTML = header.innerHTML + 
+      '<div style="margin: 20px 0;">' + processedRecommendations + '</div>' + 
+      footer.innerHTML;
     
     const opt = {
       margin: [0.75, 0.75, 0.75, 0.75],
@@ -74,12 +72,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       pagebreak: { mode: 'avoid-all' }
     };
     
-    html2pdf().set(opt).from(element).save().then(() => {
-      // Restore original content after PDF generation
-      if (content) {
-        content.innerHTML = `<div class="whitespace-pre-wrap">${processedRecommendations}</div>`;
-      }
-    });
+    html2pdf().set(opt).from(pdfContent).save();
   };
 
   if (isLoading) {
