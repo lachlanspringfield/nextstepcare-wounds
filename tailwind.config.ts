@@ -20,6 +20,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
+        serif: ["DM Serif Text", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

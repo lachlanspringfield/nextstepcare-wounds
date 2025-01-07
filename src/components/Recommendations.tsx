@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, FileWaveform } from "lucide-react";
 import html2pdf from "html2pdf.js";
+import { format } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 interface RecommendationsProps {
   recommendations: string;
@@ -11,13 +13,27 @@ interface RecommendationsProps {
 export const Recommendations = ({ recommendations, isLoading }: RecommendationsProps) => {
   const handleDownload = () => {
     const element = document.getElementById('recommendations');
-    const timestamp = new Date().toLocaleString();
+    
+    // Convert current time to Sydney timezone
+    const sydneyTime = zonedTimeToUtc(new Date(), 'Australia/Sydney');
+    const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
     
     // Create header and footer elements
     const header = document.createElement('div');
     header.innerHTML = `
       <div style="text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #000; font-size: 24px; margin: 0;">Wound Care Assistant</h1>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <path d="M4 13.5V4"/>
+            <path d="M20 13.5V4"/>
+            <path d="M16 6H8"/>
+            <path d="M12 6v8"/>
+            <path d="M16 10H8"/>
+          </svg>
+          <h1 style="color: #000; font-size: 24px; margin: 0; font-family: 'DM Serif Text', serif;">Next Step AI</h1>
+        </div>
         <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">Analysis Report</p>
       </div>
     `;
@@ -25,14 +41,23 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
     const footer = document.createElement('div');
     footer.innerHTML = `
       <div style="text-align: center; font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-        Generated on: ${timestamp}
+        <p style="margin-bottom: 10px;">Generated on: ${timestamp}</p>
+        <p style="font-size: 10px; color: #666; margin-top: 20px; text-align: justify;">
+          This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
+        </p>
       </div>
     `;
     
+    // Process markdown-style headings in recommendations
+    const processedRecommendations = recommendations.replace(/###\s*(.*?)(\n|$)/g, '<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">$1</h3>');
+    
     // Temporarily add header and footer to the recommendations div
     const content = document.getElementById('recommendations');
-    content?.insertBefore(header, content.firstChild);
-    content?.appendChild(footer);
+    if (content) {
+      content.innerHTML = header.innerHTML + 
+        '<div style="margin: 20px 0;">' + processedRecommendations + '</div>' + 
+        footer.innerHTML;
+    }
     
     const opt = {
       margin: [0.75, 0.75, 0.75, 0.75],
@@ -52,9 +77,10 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
     };
     
     html2pdf().set(opt).from(element).save().then(() => {
-      // Remove the temporary header and footer after PDF generation
-      content?.removeChild(header);
-      content?.removeChild(footer);
+      // Restore original content after PDF generation
+      if (content) {
+        content.innerHTML = `<div class="whitespace-pre-wrap">${processedRecommendations}</div>`;
+      }
     });
   };
 
@@ -70,6 +96,12 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
 
   if (!recommendations) return null;
 
+  // Process markdown-style headings for display
+  const processedRecommendations = recommendations.replace(
+    /###\s*(.*?)(\n|$)/g, 
+    '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>'
+  );
+
   return (
     <Card className="w-full max-w-xl mx-auto p-6 mt-6">
       <div className="flex justify-between items-start mb-4">
@@ -82,7 +114,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       <div id="recommendations" className="prose max-w-none text-black bg-white">
         <div 
           className="whitespace-pre-wrap"
-          dangerouslySetInnerHTML={{ __html: recommendations }}
+          dangerouslySetInnerHTML={{ __html: processedRecommendations }}
         />
       </div>
     </Card>
