@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileWaveform } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { format } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
+import { fromZonedTime } from "date-fns-tz";
 
 interface RecommendationsProps {
   recommendations: string;
@@ -15,7 +15,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
     const element = document.getElementById('recommendations');
     
     // Convert current time to Sydney timezone
-    const sydneyTime = zonedTimeToUtc(new Date(), 'Australia/Sydney');
+    const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
     const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
     
     // Create header and footer elements
@@ -26,11 +26,9 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
             <polyline points="14 2 14 8 20 8"/>
-            <path d="M4 13.5V4"/>
-            <path d="M20 13.5V4"/>
-            <path d="M16 6H8"/>
-            <path d="M12 6v8"/>
-            <path d="M16 10H8"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
           </svg>
           <h1 style="color: #000; font-size: 24px; margin: 0; font-family: 'DM Serif Text', serif;">Next Step AI</h1>
         </div>
