@@ -2,8 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import html2pdf from "html2pdf.js";
-import { format } from "date-fns";
-import { fromZonedTime } from "date-fns-tz";
 import { useToast } from "@/hooks/use-toast";
 
 interface RecommendationsProps {
@@ -30,10 +28,6 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       element.style.background = '#ffffff';
       element.style.width = '210mm'; // A4 width
       
-      // Convert current time to Sydney timezone and format with escaped timezone text
-      const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
-      const timestamp = `${format(sydneyTime, 'dd/MM/yyyy HH:mm')} (AEST)`;
-      
       console.log("Processing content for PDF...");
       
       // Process content with explicit styling
@@ -56,7 +50,6 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
           </div>
           
           <div style="text-align: center; font-size: 12px; color: #666666; margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 10px;">
-            <p style="margin: 0; font-family: Arial, sans-serif;">Generated on: ${timestamp}</p>
             <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify; font-family: Arial, sans-serif;">
               This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
             </p>
