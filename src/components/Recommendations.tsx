@@ -30,9 +30,9 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       element.style.background = '#ffffff';
       element.style.width = '210mm'; // A4 width
       
-      // Convert current time to Sydney timezone
+      // Convert current time to Sydney timezone and format with escaped timezone text
       const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
-      const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
+      const timestamp = `${format(sydneyTime, 'dd/MM/yyyy HH:mm')} (AEST)`;
       
       console.log("Processing content for PDF...");
       
