@@ -33,7 +33,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       // Process content with explicit styling
       const processedContent = recommendations.split('\n').map(line => {
         if (line.startsWith('### ')) {
-          return `<h3 style="color: #000000; font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h3>`;
+          return `<h2 style="color: #000000; font-size: 20px; font-weight: bold; margin: 20px 0 12px 0; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h2>`;
         }
         return `<p style="color: #000000; margin: 8px 0; font-family: Arial, sans-serif; line-height: 1.5;">${line}</p>`;
       }).join('');
@@ -127,7 +127,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
   // Process markdown-style headings for display
   const processedRecommendations = recommendations.split('\n').map(line => {
     if (line.startsWith('### ')) {
-      return `<h3 class="text-lg font-semibold mt-4 mb-2">${line.replace('### ', '')}</h3>`;
+      return `<h2 class="text-xl font-semibold mt-6 mb-3">${line.replace('### ', '')}</h2>`;
     }
     return `<p class="mb-2">${line}</p>`;
   }).join('');
