@@ -4,6 +4,7 @@ import { Download } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import { format } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
+import { useToast } from "@/hooks/use-toast";
 
 interface RecommendationsProps {
   recommendations: string;
@@ -11,71 +12,103 @@ interface RecommendationsProps {
 }
 
 export const Recommendations = ({ recommendations, isLoading }: RecommendationsProps) => {
-  const handleDownload = () => {
-    console.log("Starting PDF generation...");
-    
-    // Create a temporary container
-    const element = document.createElement('div');
-    
-    // Convert current time to Sydney timezone
-    const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
-    const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
-    
-    // Process markdown-style headings
-    const processedContent = recommendations.split('\n').map(line => {
-      if (line.startsWith('### ')) {
-        return `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; color: #000000;">${line.replace('### ', '')}</h3>`;
+  const { toast } = useToast();
+
+  const handleDownload = async () => {
+    try {
+      console.log("Starting PDF generation process...");
+      
+      if (!recommendations) {
+        throw new Error("No recommendations available to generate PDF");
       }
-      return `<p style="margin: 8px 0; color: #000000;">${line}</p>`;
-    }).join('');
 
-    // Set the HTML content
-    element.innerHTML = `
-      <div style="font-family: Arial, sans-serif; padding: 20px; color: #000000;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #000000; font-size: 24px; margin: 0;">Next Step AI</h1>
-          <p style="color: #666666; font-size: 14px; margin: 5px 0 0 0;">Wound Care Recommendations</p>
-        </div>
-        
-        <div style="margin: 20px 0;">
-          ${processedContent}
-        </div>
-        
-        <div style="text-align: center; font-size: 12px; color: #666666; margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 10px;">
-          <p style="margin: 0;">Generated on: ${timestamp}</p>
-          <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify;">
-            This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
-          </p>
-        </div>
-      </div>
-    `;
+      // Create a temporary container with specific styling
+      const element = document.createElement('div');
+      element.style.width = '210mm'; // A4 width
+      element.style.margin = '0';
+      element.style.padding = '20mm';
+      
+      // Convert current time to Sydney timezone
+      const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
+      const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
+      
+      // Process content with proper styling
+      const processedContent = recommendations.split('\n').map(line => {
+        if (line.startsWith('### ')) {
+          return `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; color: #000000; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h3>`;
+        }
+        return `<p style="margin: 8px 0; color: #000000; font-family: Arial, sans-serif; line-height: 1.5;">${line}</p>`;
+      }).join('');
 
-    // Configure PDF options
-    const opt = {
-      margin: 1,
-      filename: 'wound-care-recommendations.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        logging: true
-      },
-      jsPDF: { 
-        unit: 'cm', 
-        format: 'a4', 
-        orientation: 'portrait'
-      }
-    };
+      // Set the HTML content with explicit styling
+      element.innerHTML = `
+        <div style="font-family: Arial, sans-serif; color: #000000;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #000000; font-size: 24px; margin: 0; font-family: Arial, sans-serif;">Next Step AI</h1>
+            <p style="color: #666666; font-size: 14px; margin: 5px 0 0 0; font-family: Arial, sans-serif;">Wound Care Recommendations</p>
+          </div>
+          
+          <div style="margin: 20px 0;">
+            ${processedContent}
+          </div>
+          
+          <div style="text-align: center; font-size: 12px; color: #666666; margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 10px;">
+            <p style="margin: 0; font-family: Arial, sans-serif;">Generated on: ${timestamp}</p>
+            <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify; font-family: Arial, sans-serif;">
+              This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
+            </p>
+          </div>
+        </div>
+      `;
 
-    // Generate PDF with logging
-    console.log("Generating PDF with options:", opt);
-    html2pdf().set(opt).from(element).save()
-      .then(() => {
-        console.log("PDF generated successfully");
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
+      // Configure PDF options
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'wound-care-recommendations.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: true,
+          letterRendering: true,
+          windowWidth: 794, // A4 width in pixels at 96 DPI
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
+
+      console.log("PDF generation options:", opt);
+
+      // Generate PDF with proper error handling
+      const pdf = html2pdf().set(opt);
+      
+      toast({
+        title: "Generating PDF",
+        description: "Please wait while we generate your PDF...",
       });
+
+      await pdf.from(element).save();
+      
+      console.log("PDF generation completed successfully");
+      
+      toast({
+        title: "Success",
+        description: "PDF has been generated and should start downloading.",
+      });
+
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {
