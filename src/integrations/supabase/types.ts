@@ -33,6 +33,65 @@ export type Database = {
         }
         Relationships: []
       }
+      user_interactions: {
+        Row: {
+          created_at: string
+          duration: number | null
+          error_message: string | null
+          feature_accessed: string | null
+          id: string
+          interaction_type: string
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          error_message?: string | null
+          feature_accessed?: string | null
+          id?: string
+          interaction_type: string
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          error_message?: string | null
+          feature_accessed?: string | null
+          id?: string
+          interaction_type?: string
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interactions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "user_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          started_at: string
+          user_id: string | null
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       wound_analyses: {
         Row: {
           analysis_result: string

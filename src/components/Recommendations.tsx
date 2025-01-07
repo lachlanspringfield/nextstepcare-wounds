@@ -11,15 +11,51 @@ interface RecommendationsProps {
 export const Recommendations = ({ recommendations, isLoading }: RecommendationsProps) => {
   const handleDownload = () => {
     const element = document.getElementById('recommendations');
+    const timestamp = new Date().toLocaleString();
+    
+    // Create header and footer elements
+    const header = document.createElement('div');
+    header.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #000; font-size: 24px; margin: 0;">Wound Care Assistant</h1>
+        <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">Analysis Report</p>
+      </div>
+    `;
+    
+    const footer = document.createElement('div');
+    footer.innerHTML = `
+      <div style="text-align: center; font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated on: ${timestamp}
+      </div>
+    `;
+    
+    // Temporarily add header and footer to the recommendations div
+    const content = document.getElementById('recommendations');
+    content?.insertBefore(header, content.firstChild);
+    content?.appendChild(footer);
+    
     const opt = {
-      margin: 1,
+      margin: [0.75, 0.75, 0.75, 0.75],
       filename: 'wound-care-recommendations.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'portrait'
+      },
+      pagebreak: { mode: 'avoid-all' }
     };
     
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Remove the temporary header and footer after PDF generation
+      content?.removeChild(header);
+      content?.removeChild(footer);
+    });
   };
 
   if (isLoading) {
@@ -43,8 +79,11 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
           Download PDF
         </Button>
       </div>
-      <div id="recommendations" className="prose max-w-none">
-        <div className="whitespace-pre-wrap">{recommendations}</div>
+      <div id="recommendations" className="prose max-w-none text-black bg-white">
+        <div 
+          className="whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: recommendations }}
+        />
       </div>
     </Card>
   );
