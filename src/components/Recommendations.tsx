@@ -12,34 +12,38 @@ interface RecommendationsProps {
 
 export const Recommendations = ({ recommendations, isLoading }: RecommendationsProps) => {
   const handleDownload = () => {
-    // Create a temporary container for the PDF content
-    const container = document.createElement('div');
+    console.log("Starting PDF generation...");
+    
+    // Create a temporary container
+    const element = document.createElement('div');
     
     // Convert current time to Sydney timezone
     const sydneyTime = fromZonedTime(new Date(), 'Australia/Sydney');
     const timestamp = format(sydneyTime, 'dd/MM/yyyy HH:mm (AEST)');
     
-    // Process markdown-style headings for PDF
-    const processedContent = recommendations.replace(
-      /###\s*(.*?)(\n|$)/g, 
-      '<h3 style="font-size: 18px; font-weight: bold; color: #000; margin: 16px 0 8px 0;">$1</h3>'
-    );
+    // Process markdown-style headings
+    const processedContent = recommendations.split('\n').map(line => {
+      if (line.startsWith('### ')) {
+        return `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0; color: #000000;">${line.replace('### ', '')}</h3>`;
+      }
+      return `<p style="margin: 8px 0; color: #000000;">${line}</p>`;
+    }).join('');
 
-    // Set the HTML content with proper styling
-    container.innerHTML = `
-      <div style="font-family: Arial, sans-serif; padding: 20px; color: #000;">
+    // Set the HTML content
+    element.innerHTML = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; color: #000000;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #000; font-size: 24px; margin: 0;">Next Step AI</h1>
-          <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">Wound Care Recommendations</p>
+          <h1 style="color: #000000; font-size: 24px; margin: 0;">Next Step AI</h1>
+          <p style="color: #666666; font-size: 14px; margin: 5px 0 0 0;">Wound Care Recommendations</p>
         </div>
         
         <div style="margin: 20px 0;">
           ${processedContent}
         </div>
         
-        <div style="text-align: center; font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+        <div style="text-align: center; font-size: 12px; color: #666666; margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 10px;">
           <p style="margin: 0;">Generated on: ${timestamp}</p>
-          <p style="font-size: 10px; color: #666; margin-top: 20px; text-align: justify;">
+          <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify;">
             This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
           </p>
         </div>
@@ -48,23 +52,30 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
 
     // Configure PDF options
     const opt = {
-      margin: [0.5, 0.5, 0.5, 0.5],
+      margin: 1,
       filename: 'wound-care-recommendations.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2,
         useCORS: true,
-        letterRendering: true
+        logging: true
       },
       jsPDF: { 
-        unit: 'in', 
+        unit: 'cm', 
         format: 'a4', 
         orientation: 'portrait'
       }
     };
 
-    // Generate PDF
-    html2pdf().set(opt).from(container).save();
+    // Generate PDF with logging
+    console.log("Generating PDF with options:", opt);
+    html2pdf().set(opt).from(element).save()
+      .then(() => {
+        console.log("PDF generated successfully");
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+      });
   };
 
   if (isLoading) {
@@ -80,10 +91,12 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
   if (!recommendations) return null;
 
   // Process markdown-style headings for display
-  const processedRecommendations = recommendations.replace(
-    /###\s*(.*?)(\n|$)/g, 
-    '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>'
-  );
+  const processedRecommendations = recommendations.split('\n').map(line => {
+    if (line.startsWith('### ')) {
+      return `<h3 class="text-lg font-semibold mt-4 mb-2">${line.replace('### ', '')}</h3>`;
+    }
+    return `<p class="mb-2">${line}</p>`;
+  }).join('');
 
   return (
     <Card className="w-full max-w-xl mx-auto p-6 mt-6">
@@ -100,7 +113,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
         </Button>
       </div>
       <div 
-        className="prose max-w-none text-black"
+        className="prose max-w-none"
         dangerouslySetInnerHTML={{ __html: processedRecommendations }}
       />
     </Card>
