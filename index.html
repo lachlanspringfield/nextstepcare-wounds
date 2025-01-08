@@ -8,7 +8,22 @@
     <meta name="author" content="" />
     <meta property="og:image" content="./og-image.png" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text&display=swap" rel="stylesheet">
-    <base href="%PUBLIC_URL%/">
+    <base href="/">
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
   </head>
 
   <body>
@@ -17,7 +32,7 @@
       // Handle cross-origin communication
       window.addEventListener('message', function(event) {
         // Only accept messages from allowed origins
-        const allowedOrigins = ['https://gptengineer.app', 'https://lachlanspringfield.github.io'];
+        const allowedOrigins = ['https://gptengineer.app', 'https://lachlanspringfield.github.io', 'http://wounds.nextstepcare.com.au'];
         if (allowedOrigins.includes(event.origin)) {
           // Process the message
           console.log('Received message:', event.data);

@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/nextstepcare-wounds/', // Add base URL for GitHub Pages
+  base: '/', // Updated base URL for custom domain
   server: {
     host: "::",
     port: 8080,
