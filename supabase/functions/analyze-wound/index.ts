@@ -1,23 +1,19 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { corsHeaders } from '../_shared/cors.ts'
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAiSystemPrompt = `You are a wound care analysis assistant. You will receive clinical guidelines and a wound image. Your analysis must strictly follow these guidelines while providing evidence-based care recommendations. Focus on:
-
-1. Systematic assessment following the provided guidelines
-2. Evidence-based care recommendations
-3. Clear documentation of findings
-4. Specific monitoring instructions
-5. Warning signs to watch for
-
-Format your response with clear sections using ### as headers. Keep responses clear, concise, and focused on practical care steps.`
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { image_base64 } = await req.json()
+    const { image_base64 } = await req.json();
     
     if (!image_base64) {
       return new Response(
@@ -26,7 +22,7 @@ serve(async (req) => {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
-      )
+      );
     }
 
     // Fetch guidelines from the public URL
@@ -44,15 +40,32 @@ serve(async (req) => {
       console.warn("Error loading guidelines:", error);
     }
 
-    const userPrompt = `Please analyze this wound image and provide care recommendations.
+    const systemPrompt = `You are a wound care analysis assistant. Your task is to analyze wound images and provide evidence-based care recommendations following the TIME framework and dressing selection guidelines. Focus on:
+
+1. Systematic wound assessment using the TIME framework
+2. Evidence-based dressing recommendations
+3. Clear documentation of findings
+4. Specific monitoring instructions
+5. Warning signs to watch for
+
+Format your response with clear sections using ### as headers. Keep responses clear, concise, and focused on practical care steps.`;
+
+    const userPrompt = `Please analyze this wound image and provide detailed care recommendations following the TIME framework.
 
 ${guidelines ? `Based on these clinical guidelines:
 
 ${guidelines}
 
-Please ensure your analysis and recommendations strictly follow these guidelines.` : "Please provide a general wound assessment and care recommendations."}`;
+Please ensure your analysis and recommendations strictly follow these guidelines.` : "Please provide a general wound assessment and care recommendations."}
 
-    console.log("Calling OpenAI API...");
+Please structure your response with the following sections:
+### Initial Assessment
+### TIME Framework Analysis
+### Dressing Recommendations
+### Monitoring Instructions
+### Warning Signs`;
+
+    console.log("Calling OpenAI API with image analysis request...");
     
     const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -61,11 +74,11 @@ Please ensure your analysis and recommendations strictly follow these guidelines
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: openAiSystemPrompt
+            content: systemPrompt
           },
           {
             role: "user",
@@ -83,7 +96,8 @@ Please ensure your analysis and recommendations strictly follow these guidelines
             ]
           }
         ],
-        max_tokens: 500
+        max_tokens: 1000,
+        temperature: 0.7
       })
     });
 
@@ -93,13 +107,7 @@ Please ensure your analysis and recommendations strictly follow these guidelines
     
     if (!openAiResponse.ok) {
       console.error("OpenAI API Error:", result);
-      return new Response(
-        JSON.stringify({ error: result.error?.message || 'OpenAI API error' }),
-        { 
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+      throw new Error(result.error?.message || 'OpenAI API error');
     }
 
     console.log("Analysis completed successfully");
