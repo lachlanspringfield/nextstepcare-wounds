@@ -12,9 +12,29 @@ interface RecommendationsProps {
 export const Recommendations = ({ recommendations, isLoading }: RecommendationsProps) => {
   const { toast } = useToast();
 
+  const processText = (text: string) => {
+    if (!text) return '';
+    
+    return text.split('\n').map(line => {
+      // Handle headings (###)
+      if (line.startsWith('### ')) {
+        return `<h3 class="text-xl font-serif font-semibold mt-6 mb-3">${line.replace('### ', '')}</h3>`;
+      }
+      
+      // Handle bullet points
+      if (line.trim().startsWith('-')) {
+        return `<p class="mb-2 pl-4">• ${line.trim().substring(1)}</p>`;
+      }
+      
+      // Handle bold text (**text**)
+      let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      return `<p class="mb-2">${processedLine}</p>`;
+    }).join('');
+  };
+
   const handleDownload = async () => {
     console.log("Starting PDF generation process...");
-    console.log("Recommendations content:", recommendations);
     
     try {
       if (!recommendations) {
@@ -26,23 +46,28 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
       const element = document.createElement('div');
       element.style.padding = '20px';
       element.style.background = '#ffffff';
-      element.style.width = '210mm'; // A4 width
+      element.style.width = '180mm'; // Reduced from 210mm to ensure content fits
+      element.style.margin = '0 auto'; // Center the content
       
       console.log("Processing content for PDF...");
       
       // Process content with explicit styling
       const processedContent = recommendations.split('\n').map(line => {
         if (line.startsWith('### ')) {
-          return `<h2 style="color: #000000; font-size: 20px; font-weight: bold; margin: 20px 0 12px 0; font-family: Arial, sans-serif;">${line.replace('### ', '')}</h2>`;
+          return `<h3 style="color: #000000; font-size: 20px; font-weight: bold; margin: 20px 0 12px 0; font-family: 'Times New Roman', serif;">${line.replace('### ', '')}</h3>`;
         }
-        return `<p style="color: #000000; margin: 8px 0; font-family: Arial, sans-serif; line-height: 1.5;">${line}</p>`;
+        if (line.trim().startsWith('-')) {
+          return `<p style="color: #000000; margin: 8px 0 8px 20px; font-family: 'Times New Roman', serif; line-height: 1.5;">• ${line.trim().substring(1)}</p>`;
+        }
+        let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        return `<p style="color: #000000; margin: 8px 0; font-family: 'Times New Roman', serif; line-height: 1.5;">${processedLine}</p>`;
       }).join('');
 
       element.innerHTML = `
-        <div style="font-family: Arial, sans-serif; color: #000000;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h1 style="color: #000000; font-size: 24px; margin: 0; font-family: Arial, sans-serif;">Next Step AI</h1>
-            <p style="color: #666666; font-size: 14px; margin: 5px 0 0 0; font-family: Arial, sans-serif;">Wound Care Recommendations</p>
+        <div style="font-family: 'Times New Roman', serif; color: #000000; max-width: 160mm; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 20px; width: 100%;">
+            <h1 style="color: #000000; font-size: 24px; margin: 0 auto; font-family: 'Times New Roman', serif;">Next Step AI</h1>
+            <p style="color: #666666; font-size: 14px; margin: 5px auto 0; font-family: 'Times New Roman', serif;">Wound Care Recommendations</p>
           </div>
           
           <div style="margin: 20px 0;">
@@ -50,7 +75,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
           </div>
           
           <div style="text-align: center; font-size: 12px; color: #666666; margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 10px;">
-            <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify; font-family: Arial, sans-serif;">
+            <p style="font-size: 10px; color: #666666; margin-top: 20px; text-align: justify; font-family: 'Times New Roman', serif;">
               This tool is intended only for the purpose of providing or supporting a recommendation to a health professional about prevention, diagnosis, curing or alleviating a disease, ailment, defect or injury. It is not intended to replace the clinical judgement of a health care professional to make a clinical diagnosis or treatment decision regarding an individual patient.
             </p>
           </div>
@@ -61,7 +86,7 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
 
       // Configure PDF options
       const opt = {
-        margin: 10,
+        margin: [15, 15, 15, 15], // Adjusted margins [top, right, bottom, left]
         filename: 'wound-care-recommendations.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
@@ -84,7 +109,6 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
         description: "Please wait while we generate your PDF...",
       });
 
-      // Generate PDF with Promise chain for better error handling
       await html2pdf()
         .from(element)
         .set(opt)
@@ -124,18 +148,10 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
 
   if (!recommendations) return null;
 
-  // Process markdown-style headings for display
-  const processedRecommendations = recommendations.split('\n').map(line => {
-    if (line.startsWith('### ')) {
-      return `<h2 class="text-xl font-semibold mt-6 mb-3">${line.replace('### ', '')}</h2>`;
-    }
-    return `<p class="mb-2">${line}</p>`;
-  }).join('');
-
   return (
     <Card className="w-full max-w-xl mx-auto p-6 mt-6">
       <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-semibold">Wound Care Recommendations</h3>
+        <h3 className="text-lg font-serif font-semibold">Wound Care Recommendations</h3>
         <Button 
           variant="outline" 
           size="sm" 
@@ -147,8 +163,8 @@ export const Recommendations = ({ recommendations, isLoading }: RecommendationsP
         </Button>
       </div>
       <div 
-        className="prose max-w-none"
-        dangerouslySetInnerHTML={{ __html: processedRecommendations }}
+        className="prose max-w-none font-serif"
+        dangerouslySetInnerHTML={{ __html: processText(recommendations) }}
       />
     </Card>
   );
