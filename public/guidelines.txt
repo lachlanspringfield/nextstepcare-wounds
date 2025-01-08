@@ -1,31 +1,87 @@
 ### Wound Assessment Guidelines
 
-1. Wound Bed Assessment
-- Evaluate tissue type (granulation, slough, necrotic)
-- Note wound bed color and consistency
-- Identify signs of infection
+The TIME framework is used for comprehensive wound assessment and guides appropriate management strategies to promote healing. Below is a detailed summary of the TIME framework and specific dressing selection, including example products recommended by the guideline:
 
-2. Wound Measurements
-- Measure length, width, and depth
-- Document wound edges and periwound condition
-- Track changes from previous assessments
+TIME Framework
+T - Tissue Management:
 
-3. Exudate Management
-- Assess amount (none, light, moderate, heavy)
-- Note color and consistency
-- Evaluate odor presence
+Ensure the removal of non-viable or necrotic tissue using appropriate debridement techniques such as:
+Sharp debridement: Scalpel or scissors.
+Autolytic debridement: Hydrogel dressings or hydrocolloids.
+Enzymatic debridement: Proteolytic enzyme preparations.
+Mechanical debridement: Wet-to-dry dressings or wound irrigation.
+I - Infection/Inflammation Control:
 
-4. Pain Assessment
-- Document patient-reported pain levels
-- Note timing of pain (constant, during dressing changes)
-- Assess impact on daily activities
+If infection is present, consider using dressings with antimicrobial properties:
+Silver-containing dressings (e.g., Acticoat, Aquacel Ag).
+Iodine-containing dressings (e.g., Inadine, Iodosorb).
+PHMB-containing dressings (e.g., Kerlix AMD).
+For heavily colonised or malodorous wounds, use activated charcoal dressings (e.g., Carboflex).
+Systemic antibiotics should be considered if signs of spreading infection are observed.
+M - Moisture Balance:
 
-5. Infection Prevention
-- Monitor for signs of infection
-- Document temperature of surrounding tissue
-- Note presence of biofilm
+Maintain an optimal moisture level by selecting dressings based on exudate levels:
+Dry wounds: Hydrogel sheets or amorphous gels (e.g., Solugel, Intrasite Gel).
+Low to moderate exudate: Hydrocolloids (e.g., Duoderm, Comfeel).
+Moderate to high exudate: Foam dressings (e.g., Allevyn, Biatain, Mepilex).
+High exudate:
+Alginate dressings (e.g., Kaltostat, Sorbsan).
+Hydrocellular foam (e.g., Aquacel Extra, Tielle).
+Over-granulating wounds: Consider applying a foam dressing with light pressure.
+If the wound shows signs of maceration (over-moisture), change to more absorbent dressings or increase dressing change frequency.
+E - Edge of Wound:
 
-6. Healing Progress
-- Track epithelialization
-- Document granulation tissue development
-- Monitor wound edge advancement
+Evaluate for undermining or rolled wound edges (epibole). If present:
+Use a hydrocolloid or foam dressing to promote epithelialisation.
+Consider adjunct therapies such as negative pressure wound therapy (NPWT) if edges fail to advance.
+Dressing Selection Guidelines
+Below is a detailed list of dressing types and example products for various wound conditions:
+
+Hydrogel Dressings:
+
+Products: Solugel, Intrasite Gel, Purilon Gel.
+Indications: For dry wounds or wounds requiring autolytic debridement.
+Hydrocolloids:
+
+Products: Duoderm, Comfeel, Replicare.
+Indications: For low to moderate exudate wounds; promotes moist healing.
+Foam Dressings:
+
+Products: Allevyn, Biatain, Mepilex, Polymem.
+Indications: For moderate to high exudate wounds; protects granulating tissue.
+Alginate Dressings:
+
+Products: Kaltostat, Sorbsan, Algisite M.
+Indications: For high exudate wounds; provides haemostatic effect.
+Hydrofibre Dressings:
+
+Products: Aquacel Extra, Aquacel Ag.
+Indications: For moderate to high exudate wounds, especially those at risk of infection.
+Silver-containing Dressings:
+
+Products: Acticoat, Aquacel Ag, Mepilex Ag.
+Indications: For infected or high-risk wounds; antimicrobial properties.
+Iodine-containing Dressings:
+
+Products: Inadine, Iodosorb, Iodoflex.
+Indications: For infected wounds; antimicrobial and absorbent.
+PHMB-containing Dressings:
+
+Products: Kerlix AMD, Suprasorb X + PHMB.
+Indications: For colonised wounds or those at high risk of infection.
+Charcoal Dressings:
+
+Products: Carboflex, Actisorb.
+Indications: For malodorous wounds; absorbs odour and bacteria.
+Negative Pressure Wound Therapy (NPWT):
+
+Products: VAC systems (e.g., VAC Ulta, PICO NPWT).
+Indications: For chronic, complex, or slow-healing wounds.
+Instructions for Wound Analysis Output
+Instruct ChatGPT to use the TIME framework when generating wound analysis. The output should include:
+
+Tissue Management: Describe the tissue status (e.g., necrotic, granulating) and recommend appropriate debridement techniques or dressings.
+Infection/Inflammation Control: Assess for signs of infection and suggest antimicrobial dressings if necessary.
+Moisture Balance: Evaluate moisture levels and recommend dressings based on exudate levels, using specific product examples where applicable.
+Edge of Wound: Examine the wound edges and suggest measures to promote closure or correct abnormalities.
+Additionally, dressing recommendations should be specific, and the analysis should explicitly reference the products listed in this guideline when relevant. Ensure concise formatting to minimise token usage while maintaining clarity.
