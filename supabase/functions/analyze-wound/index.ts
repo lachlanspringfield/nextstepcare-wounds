@@ -1,16 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from '../_shared/cors.ts'
 
-const openAiSystemPrompt = `You are a wound care analysis assistant. Analyze the provided wound image and provide evidence-based care recommendations. Focus on:
-1. Wound characteristics
-2. Cleaning and dressing recommendations
-3. Monitoring instructions
-4. Warning signs to watch for
+const openAiSystemPrompt = `You are a wound care analysis assistant. You will receive clinical guidelines and a wound image. Your analysis must strictly follow these guidelines while providing evidence-based care recommendations. Focus on:
 
-Keep responses clear, concise, and focused on practical care steps.`
+1. Systematic assessment following the provided guidelines
+2. Evidence-based care recommendations
+3. Clear documentation of findings
+4. Specific monitoring instructions
+5. Warning signs to watch for
+
+Format your response with clear sections using ### as headers. Keep responses clear, concise, and focused on practical care steps.`
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -28,9 +29,31 @@ serve(async (req) => {
       )
     }
 
+    // Fetch guidelines from the public URL
+    console.log("Fetching clinical guidelines...");
+    let guidelines = "";
+    try {
+      const guidelinesResponse = await fetch('https://wounds.nextstepcare.com.au/guidelines.txt');
+      if (guidelinesResponse.ok) {
+        guidelines = await guidelinesResponse.text();
+        console.log("Guidelines loaded successfully");
+      } else {
+        console.warn("Failed to load guidelines, using fallback analysis approach");
+      }
+    } catch (error) {
+      console.warn("Error loading guidelines:", error);
+    }
+
+    const userPrompt = `Please analyze this wound image and provide care recommendations.
+
+${guidelines ? `Based on these clinical guidelines:
+
+${guidelines}
+
+Please ensure your analysis and recommendations strictly follow these guidelines.` : "Please provide a general wound assessment and care recommendations."}`;
+
     console.log("Calling OpenAI API...");
     
-    // Call OpenAI API for image analysis
     const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -49,7 +72,7 @@ serve(async (req) => {
             content: [
               {
                 type: "text",
-                text: "Please analyze this wound image and provide care recommendations."
+                text: userPrompt
               },
               {
                 type: "image_url",

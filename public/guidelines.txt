@@ -1,0 +1,31 @@
+### Wound Assessment Guidelines
+
+1. Wound Bed Assessment
+- Evaluate tissue type (granulation, slough, necrotic)
+- Note wound bed color and consistency
+- Identify signs of infection
+
+2. Wound Measurements
+- Measure length, width, and depth
+- Document wound edges and periwound condition
+- Track changes from previous assessments
+
+3. Exudate Management
+- Assess amount (none, light, moderate, heavy)
+- Note color and consistency
+- Evaluate odor presence
+
+4. Pain Assessment
+- Document patient-reported pain levels
+- Note timing of pain (constant, during dressing changes)
+- Assess impact on daily activities
+
+5. Infection Prevention
+- Monitor for signs of infection
+- Document temperature of surrounding tissue
+- Note presence of biofilm
+
+6. Healing Progress
+- Track epithelialization
+- Document granulation tissue development
+- Monitor wound edge advancement

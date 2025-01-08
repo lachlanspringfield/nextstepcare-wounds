@@ -37,7 +37,6 @@ const Index = () => {
     startSession();
 
     return () => {
-      // End session when component unmounts
       if (sessionId) {
         supabase
           .from('user_sessions')
@@ -93,10 +92,8 @@ const Index = () => {
       if (error) throw error;
       if (!data?.analysis) throw new Error('No analysis received');
 
-      // Format the analysis text with proper HTML tags
       const formattedAnalysis = data.analysis
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/###\s*(.*?)(?=(?:\n|$))/g, '<h2>$1</h2>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>')
         .replace(/•\s(.*?)(?=(?:\n|$))/g, '<li>$1</li>')
@@ -137,10 +134,10 @@ const Index = () => {
       <main className="py-12 px-4 animate-fade-in">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-primary mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Wound Analysis
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-white max-w-2xl mx-auto text-sm">
               Receive evidence-based care recommendations from our AI-powered tool, comparing wounds against validated guidelines.
             </p>
           </div>
