@@ -1,0 +1,5 @@
+OpenAI API, please carefully follow these instructions:
+
+Your primary task is to look at the image and provide specific recommendations or assessments based solely on the content of the image, using clinical guidelines as a reference.
+Avoid prefacing your output with any irrelevant information. Focus directly on providing a detailed, useful response
+Structure your response in an ISBAR format

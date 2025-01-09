@@ -43,30 +43,20 @@ serve(async (req) => {
       console.warn("Error loading guidelines:", error);
     }
 
-    const systemPrompt = `You are a wound care analysis assistant. Your task is to analyze wound images and provide evidence-based care recommendations following the TIME framework and dressing selection guidelines. Focus on:
-
-1. Systematic wound assessment using the TIME framework
-2. Evidence-based dressing recommendations
-3. Clear documentation of findings
-4. Specific monitoring instructions
-5. Warning signs to watch for
-
-Format your response with clear sections using ### as headers. Keep responses clear, concise, and focused on practical care steps.`;
-
-    const userPrompt = `Please analyze this wound image and provide detailed care recommendations following the TIME framework.
-
-${guidelines ? `Based on these clinical guidelines:
-
-${guidelines}
-
-Please ensure your analysis and recommendations strictly follow these guidelines.` : "Please provide a general wound assessment and care recommendations."}
-
-Please structure your response with the following sections:
-### Initial Assessment
-### TIME Framework Analysis
-### Dressing Recommendations
-### Monitoring Instructions
-### Warning Signs`;
+    // Fetch prompt from the public URL
+    console.log("Fetching prompt...");
+    let prompt = "";
+    try {
+      const promptResponse = await fetch('https://wounds.nextstepcare.com.au/prompt.txt');
+      if (promptResponse.ok) {
+        prompt = await promptResponse.text();
+        console.log("Prompt loaded successfully");
+      } else {
+        console.warn("Failed to load prompt");
+      }
+    } catch (error) {
+      console.warn("Error loading prompt:", error);
+    }
 
     console.log("Preparing OpenAI API request...");
     
@@ -77,15 +67,11 @@ Please structure your response with the following sections:
 
     const messages = [
       {
-        role: "system",
-        content: systemPrompt
-      },
-      {
         role: "user",
         content: [
           {
             type: "text",
-            text: userPrompt
+            text: `${prompt}\n\n${guidelines ? `Based on these clinical guidelines:\n\n${guidelines}` : ''}`
           },
           {
             type: "image_url",
@@ -106,7 +92,7 @@ Please structure your response with the following sections:
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: messages,
         max_tokens: 1000,
         temperature: 0.7
