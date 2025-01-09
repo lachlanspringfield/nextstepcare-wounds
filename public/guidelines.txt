@@ -1,1 +1,6 @@
-Do not begin your response with "I'm unable to analyze images directly, but I can provide general wound care recommendations based on common observations." This is already understood and you do not need to say this.
+OpenAI API, please carefully follow these instructions:
+
+Do NOT include any variation of the phrase 'I'm unable to analyze specific images' or any disclaimers about your image analysis capabilities at the beginning of the output.
+The necessary disclaimer has already been included on the website where this API is being used, so repeating it in your output is redundant.
+Your primary task is to analyse the image and provide specific recommendations or assessments based solely on the content of the image, using clinical guidelines as a reference.
+Avoid prefacing your output with any irrelevant information. Focus directly on providing a detailed, useful response
