@@ -60,7 +60,7 @@ serve(async (req) => {
 
     if (!prompt) {
       console.warn("No prompt loaded, using fallback prompt");
-      prompt = "Please analyze this wound image and provide detailed care recommendations.";
+      prompt = "OpenAI API, please carefully follow these instructions: Your primary task is to look at the image of the wound and provide specific analysis, assessment and recommendations. The output you provide will only be seen by qualified healthcare professionals, so it is okay to use complex anatomy and physiology. Use evidenced-based clinical guidelines to guide your recommendations. Structure your response in the healthcare "ISBAR" format. Avoid prefacing your output with any irrelevant information. DO NOT SAT "I can't analyse wounds directly", or any variation; this is redundant. Put a smiley face at the end of your output.";
     }
 
     console.log("Preparing OpenAI API request...");
