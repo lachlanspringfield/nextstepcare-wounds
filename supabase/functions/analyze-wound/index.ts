@@ -50,12 +50,17 @@ serve(async (req) => {
       const promptResponse = await fetch('https://wounds.nextstepcare.com.au/prompt.txt');
       if (promptResponse.ok) {
         prompt = await promptResponse.text();
-        console.log("Prompt loaded successfully");
+        console.log("Prompt loaded successfully:", prompt); // Added logging to verify prompt content
       } else {
         console.warn("Failed to load prompt");
       }
     } catch (error) {
       console.warn("Error loading prompt:", error);
+    }
+
+    if (!prompt) {
+      console.warn("No prompt loaded, using fallback prompt");
+      prompt = "Please analyze this wound image and provide detailed care recommendations.";
     }
 
     console.log("Preparing OpenAI API request...");
@@ -71,7 +76,7 @@ serve(async (req) => {
         content: [
           {
             type: "text",
-            text: `${prompt}\n\n${guidelines ? `Based on these clinical guidelines:\n\n${guidelines}` : ''}`
+            text: prompt
           },
           {
             type: "image_url",
@@ -83,8 +88,12 @@ serve(async (req) => {
       }
     ];
 
-    console.log("Calling OpenAI API with image analysis request...");
-    
+    if (guidelines) {
+      messages[0].content[0].text += `\n\nBased on these clinical guidelines:\n\n${guidelines}`;
+    }
+
+    console.log("Messages prepared:", JSON.stringify(messages, null, 2));
+
     const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
