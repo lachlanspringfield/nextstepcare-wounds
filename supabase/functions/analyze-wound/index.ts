@@ -25,6 +25,9 @@ serve(async (req) => {
       );
     }
 
+    // Log the first 100 characters of the image to verify format
+    console.log("Image base64 prefix:", image_base64.substring(0, 100));
+
     // Fetch guidelines from the public URL
     console.log("Fetching clinical guidelines...");
     let guidelines = "";
@@ -65,6 +68,35 @@ Please structure your response with the following sections:
 ### Monitoring Instructions
 ### Warning Signs`;
 
+    console.log("Preparing OpenAI API request...");
+    
+    // Ensure the image URL is properly formatted
+    const imageUrl = image_base64.startsWith('data:') 
+      ? image_base64 
+      : `data:image/jpeg;base64,${image_base64}`;
+
+    const messages = [
+      {
+        role: "system",
+        content: systemPrompt
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userPrompt
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: imageUrl
+            }
+          }
+        ]
+      }
+    ];
+
     console.log("Calling OpenAI API with image analysis request...");
     
     const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -75,27 +107,7 @@ Please structure your response with the following sections:
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: userPrompt
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: image_base64
-                }
-              }
-            ]
-          }
-        ],
+        messages: messages,
         max_tokens: 1000,
         temperature: 0.7
       })
@@ -108,6 +120,11 @@ Please structure your response with the following sections:
     if (!openAiResponse.ok) {
       console.error("OpenAI API Error:", result);
       throw new Error(result.error?.message || 'OpenAI API error');
+    }
+
+    if (!result.choices?.[0]?.message?.content) {
+      console.error("Unexpected API response format:", result);
+      throw new Error('Invalid response format from OpenAI API');
     }
 
     console.log("Analysis completed successfully");
